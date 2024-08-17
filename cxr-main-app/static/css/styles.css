@@ -1,0 +1,422 @@
+body {
+  font-family: "Roboto", "sans-serif";
+  margin: 0;
+  display: grid;
+  grid-template-rows: 80px 1fr;
+  grid-template-columns: 325px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.titlebar {
+  grid-column: 1 / -1;
+  background-color: #282828;
+  text-align: left;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5); /* Adding a drop shadow */
+  color: white;
+}
+
+.links a {
+  margin-left: 20px;
+  color: white;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.sidebar {
+  background-color: #516287;
+  overflow-x: hidden;
+  padding-top: 20px;
+  box-sizing: border-box;
+  display: block;
+  z-index: 1000;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5); /* Adding a drop shadow */
+  color: white;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: white;
+}
+
+.sidebar-header {
+  flex-shrink: 0;
+  color: white;
+}
+
+.sidebar-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  color: white;
+}
+
+body.sidebar-hidden {
+  grid-template-columns: 1fr;
+}
+
+body.sidebar-visible {
+  grid-template-columns: 325px 1fr;
+}
+
+dialog {
+  width: 80vw;
+  max-width: 600px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#fileListContainer {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+#fileListContainer div {
+  padding: 10px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+}
+
+button {
+  margin-top: 20px;
+}
+
+.main {
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.square,
+#backgroundImage,
+#overlay {
+  width: 35vw;
+  height: 35vw;
+  position: fixed;
+  top: 165px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 1px;
+  border-color: black;
+  border-style: dashed;
+}
+
+#sliderContainer {
+  position: fixed;
+  top: calc(165px + 35vw + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#squareSlider {
+  -webkit-appearance: none; /* Remove default styling */
+  appearance: none;
+  width: 30vw;
+  height: 8px; /* Height of the track */
+  border-radius: 25px;
+  outline: none;
+  margin: 20px 0;
+  background: linear-gradient(to right, #516287 50%, #ccc 50%);
+}
+
+#squareSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px; /* Width of the thumb */
+  height: 16px; /* Height of the thumb */
+  border-radius: 50%;
+  background: #516287;
+  cursor: pointer;
+}
+
+#squareSlider::-moz-range-thumb {
+  width: 16px; /* Width of the thumb */
+  height: 16px; /* Height of the thumb */
+  border-radius: 50%;
+  background: #516287;
+  cursor: pointer;
+}
+
+#squareSlider::-ms-thumb {
+  width: 16px; /* Width of the thumb */
+  height: 16px; /* Height of the thumb */
+  border-radius: 50%;
+  background: #516287;
+  cursor: pointer;
+}
+
+#squareSlider::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  background: transparent;
+}
+
+#squareSlider::-ms-track {
+  width: 100%;
+  height: 8px;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+#sliderValue {
+  width: 50px;
+  text-align: right;
+  margin-right: 10px;
+}
+
+.info-icon {
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; /* Adjust the size as needed */
+  height: 20px; /* Adjust the size as needed */
+  min-width: 20px; /* Ensure it doesn't shrink smaller than this */
+  min-height: 20px; /* Ensure it doesn't shrink smaller than this */
+  max-width: 20px; /* Ensure it doesn't grow larger than this */
+  max-height: 20px; /* Ensure it doesn't grow larger than this */
+  background-color: #f0f0f0; /* Background color of the circle */
+  border-radius: 50%; /* Makes the div a circle */
+  cursor: pointer;
+  font-size: 16px;
+  color: black; /* Color of the question mark */
+  font-weight: normal;
+  text-align: center;
+  line-height: 1;
+  border: 1px solid black; /* Optional: Add a border around the circle */
+}
+
+.info-icon:hover {
+  background-color: #dcdcdc; /* Change color on hover if desired */
+}
+
+/* 
+.info-box {
+  display: none; 
+  position: absolute;
+  top: -100px;
+  left: 100%;
+  margin-left: 10px; 
+  max-width: 250px; 
+  max-height: 150px; 
+  background-color: white; 
+  border: 1px solid #ccc; 
+  border-radius: 10px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  overflow-y: scroll; 
+  overflow-x: hidden; 
+  padding: 20px; 
+  z-index: 10000; 
+  word-wrap: break-word; 
+  overflow-wrap: break-word; 
+  white-space: normal; 
+}
+@media (max-width: 1030px) {
+  .info-box {
+    top: 100%; 
+    left: 0;
+    margin-top: 10px; 
+    margin-left: 0;
+    z-index: 10000;
+  }
+} 
+.info-box-content p {
+  margin: 10px 0; 
+  font-size: 14px;
+  color: black;
+  width: 300px;
+  text-align: left;
+  line-height: 1.5;
+} */
+
+.analysis-label {
+  position: fixed;
+  top: 95px;
+  left: 345px;
+  font-size: 24px;
+  color: black;
+}
+
+.hamburger {
+  display: none;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: black;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+}
+
+.prediction-text {
+  position: absolute;
+  top: 80px;
+  left: calc(50% + 35vw / 2 - 120px);
+  font-size: 30px;
+  color: black;
+  text-align: left;
+}
+
+.additional-text {
+  position: absolute;
+  top: 130px;
+  left: calc(50% + 35vw / 2 - 120px);
+  font-size: 14px;
+  color: black;
+  width: 300px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.upload-label {
+  position: absolute;
+  top: 95px;
+  left: 20px;
+  font-size: 24px;
+  color: white;
+}
+
+.upload-text {
+  position: absolute;
+  top: 140px;
+  left: 20px;
+  font-size: 14px;
+  color: white;
+  text-align: left;
+  width: 285px;
+  line-height: 1.5;
+}
+
+.custom-dropdown {
+  position: absolute;
+  display: inline-block;
+  top: 315px;
+  left: 20px;
+  width: 285px;
+  font-size: 16px;
+  color: black;
+}
+
+.dropdown-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  text-align: left;
+  background-color: white;
+  border: none; /* Removes all borders */
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.dropdown-options {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  width: 100%;
+}
+
+.dropdown-options div {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+}
+
+.dropdown-options div:hover {
+  background-color: #f1f1f1;
+}
+
+@media (max-width: 1030px) {
+  body {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .prediction-text {
+    position: fixed;
+    top: calc(165px + 60vw + 50px);
+    left: 20vw;
+  }
+
+  .additional-text {
+    position: fixed;
+    top: calc(165px + 60vw + 90px);
+    left: 20vw;
+    width: 60vw;
+  }
+
+  .analysis-label {
+    left: 20px;
+  }
+
+  .square,
+  #backgroundImage,
+  #overlay {
+    width: 60vw;
+    height: 60vw;
+  }
+
+  #sliderContainer {
+    top: calc(165px + 60vw + 5px);
+    left: 50%;
+    width: 60vw;
+  }
+
+  #squareSlider {
+    left: 50%;
+    width: 60vw;
+  }
+
+  .main-container {
+    flex-direction: column;
+  }
+
+  .main {
+    flex-direction: column;
+    align-items: left;
+    overflow-y: auto;
+  }
+}

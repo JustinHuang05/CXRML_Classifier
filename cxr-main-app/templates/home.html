@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CXRML Classifier</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='cxr_cartoon.png') }}"
+      class="favicon"
+    />
+    <link rel="stylesheet" href="../static/css/styles.css" />
+  </head>
+  <body>
+    <div class="titlebar">
+      <h1>CXRML Classifier</h1>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/about">About This Project</a>
+      </div>
+    </div>
+    <div class="sidebar" id="sidebar">
+      <div class="column-container">
+        <div class="upload-label">Upload Image</div>
+        <div class="upload-text">
+          Choose the chest X-ray of a patient that is suspected for having
+          Pneumonia, Covid, or being Normal. You can upload this image from your
+          own device, choose an image from the ML model's test dataset, or
+          choose an image from a compilation of chest X-rays that have been
+          sourced from outside of the original dataset used by the ML model.
+        </div>
+        <div class="custom-dropdown">
+          <button
+            id="dropdownButton"
+            class="dropdown-button"
+            onclick="toggleDropdown()"
+          >
+            Select a file
+          </button>
+          <div id="dropdownOptions" class="dropdown-options">
+            <div onclick="handleDropdownOption1()">Select from device</div>
+            <div onclick="handleDropdownOption2and3('cxr_test_data')">
+              Select from test dataset
+            </div>
+            <div onclick="handleDropdownOption2and3('external_test_data')">
+              Select from external sources
+            </div>
+          </div>
+        </div>
+        <input
+          type="file"
+          id="fileInput"
+          style="display: none"
+          onchange="handleFileSelect(this)"
+          accept="image/*"
+        />
+      </div>
+    </div>
+    <div class="main" id="main">
+      <div class="analysis-label">Analysis</div>
+      <div class="hamburger" id="hamburger" onclick="toggleSidebar()">
+        &#9776;
+      </div>
+      <div class="main-container">
+        <div class="column-container">
+          <div class="square" id="square"></div>
+          <img id="backgroundImage" src="/static/cxr_cartoon.png" />
+          <canvas id="overlay"></canvas>
+          <div id="sliderContainer" style="display: none">
+            <input
+              type="range"
+              id="squareSlider"
+              min="10"
+              max="100"
+              value="30"
+            />
+            <span id="sliderValue">30%</span>
+            <span class="info-icon" id="infoIcon">?</span>
+            <!-- <div id="infoBox" class="info-box">
+              <div class="info-box-content">
+                <p>
+                  The application uses Guided Backpropagation to highlight key
+                  regions of a chest X-ray based on user-adjustable thresholds.
+                  This technique calculates gradients to determine which pixels
+                  most influence the model's prediction. By adjusting the
+                  threshold slider, users control the percentage of the maximum
+                  gradient that must be exceeded for a pixel to be highlighted.
+                  Lower percentages show broader, less critical regions, while
+                  higher percentages focus on the most relevant areas.
+                </p>
+              </div>
+            </div> -->
+          </div>
+        </div>
+        <div class="column-container">
+          <div class="prediction-text">Welcome!</div>
+          <div class="additional-text">
+            Additional information regarding the prediction will appear here.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dialog for file selection -->
+    <dialog id="fileDialog">
+      <h2>Select a file</h2>
+      <div id="fileListContainer"></div>
+      <button onclick="closeDialog()">Close</button>
+    </dialog>
+
+    <script src="../static/js/scripts.js"></script>
+  </body>
+</html>

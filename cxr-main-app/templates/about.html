@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About This Project</title>
+    <link rel="stylesheet" href="../static/css/styles2.css" />
+  </head>
+  <body>
+    <div class="titlebar">
+      <h1>CXRML Classifier</h1>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/about">About This Project</a>
+      </div>
+    </div>
+    <div class="scroll-wrapper">
+      <div class="about-container">
+        <h1>About CXRML Classifier</h1>
+        <p>
+          Welcome to CXRML Classifier (Chest X-ray Machine Learning Classifier),
+          a prototype solution aiming to assist medical professionals in
+          diagnosing various pulmonary conditions through advanced image
+          analysis. This application leverages machine learning algorithms to
+          provide accurate and timely insights from chest X-ray images. Below is
+          an overview of the application, its capabilities, and the technology
+          that powers it.
+        </p>
+
+        <h2>Summary</h2>
+        <p>
+          CXRML Classifier is a diagnostic assistant for healthcare providers,
+          utilizing DenseNet-121, a Convolutional Neural Network (CNN), to
+          analyze chest X-rays. The application offers high accuracy, real-time
+          analysis, and an intuitive user interface. CXRML Classifier includes
+          explainable AI features, allowing users to understand the model’s
+          decision-making process by highlighting significant regions in the
+          X-rays. CXRML Classifier’s mission is to provide healthcare providers
+          with diagnostic tools that improve patient outcomes. This application
+          aims to bridge the gap between traditional radiological practices and
+          modern machine learning techniques.
+        </p>
+
+        <h2>How It Works</h2>
+        <p>
+          This application is built on a sophisticated machine-learning model
+          trained on thousands of chest X-ray images labeled as “Covid-19”,
+          “Normal”, or “Pneumonia”. The model is designed to identify patterns
+          and anomalies in these images, helping to detect the above-mentioned
+          conditions. Here’s a detailed breakdown of how the application
+          operates:
+        </p>
+        <ul>
+          <li>
+            <strong>Image Upload and Preprocessing:</strong> Users can upload
+            chest X-ray images directly through the user-friendly interface.
+            Once uploaded, the image undergoes preprocessing, where it is
+            resized, normalized, and prepared for analysis. This step ensures
+            that the input data is standardized, allowing the model to perform
+            optimally.
+          </li>
+          <li>
+            <strong>Feature Extraction:</strong> The core of the application
+            lies in its ability to extract meaningful features from the X-ray
+            images. Using DenseNet-121, a Convolutional Neural Network (CNN),
+            the model scans the image to identify key patterns, textures, and
+            shapes that may correlate to the presence of disease. These features
+            are then fed into the model’s decision-making process.
+          </li>
+          <li>
+            <strong>Prediction and Analysis:</strong> After extracting features,
+            the model evaluates the image against its trained dataset to make
+            predictions. The application identifies whether the X-ray shows
+            signs of conditions like Covid-19, Pneumonia, or normal lung health.
+            It also highlights the areas of the image that contributed most to
+            the prediction, providing a visual explanation for the diagnosis.
+          </li>
+          <li>
+            <strong>Results and Interpretation:</strong> The application
+            presents the results in an easy-to-understand visual format. Users
+            receive a clear prediction, such as "Predicted: Covid-19,"
+            "Predicted: Pneumonia," or "Predicted: Normal." Alongside this
+            prediction, the application highlights specific regions of the chest
+            X-ray based on a threshold mechanism, which can be adjusted by the
+            user. This highlighting is achieved through a technique called
+            Guided Backpropagation. Guided Backpropagation works by calculating
+            the gradients of the predicted class score with respect to each
+            pixel in the input image. These gradients are obtained through a
+            process called backpropagation, where the model computes how changes
+            in each pixel would affect the final prediction. The gradients
+            indicate how much each pixel in the input image contributes to the
+            model’s decision. By using these gradients, the application can
+            identify and highlight the regions in the X-ray image that are most
+            significant for the prediction. When the user adjusts the threshold
+            slider, the application highlights only those pixels where the
+            gradient values exceed a certain percentage (controlled by the user)
+            of the maximum gradient. This means that only the most significant
+            pixels (those that contributed most strongly to the prediction) are
+            highlighted. A lower threshold will result in more pixels being
+            highlighted, showing a broader area of the image that includes less
+            critical regions, while a higher threshold will narrow the focus to
+            only the most relevant areas. This interactive feature provides
+            users with the ability to explore different levels of model
+            confidence, offering deeper insights into which parts of the X-ray
+            were most influential in determining the diagnosis. The highlighted
+            pixels serve as a visual representation of the areas that the model
+            considered most indicative of the condition being predicted, helping
+            to enhance the interpretability of the AI model’s decision-making
+            process.
+          </li>
+        </ul>
+
+        <h2>Key Features</h2>
+        <p>
+          CXRML Classifier offers several key features that if refined, could
+          make it a useful tool for radiologists and healthcare providers:
+        </p>
+        <ul>
+          <li>
+            <strong>High Accuracy and Reliability:</strong> Trained on a diverse
+            and comprehensive dataset, the model achieved an accuracy of 96.67%
+            when classifying Chest X-rays of people with Covid-19, Pneumonia, or
+            normal lung health.
+          </li>
+          <li>
+            <strong>Real-time Analysis:</strong> The application provides
+            results in real time, enabling quick decision-making in critical
+            care settings.
+          </li>
+          <li>
+            <strong>User-friendly Interface:</strong> The application was
+            designed with ease of use in mind. The interface is intuitive,
+            allowing users to upload images, view results, and interpret
+            findings without needing extensive technical knowledge.
+          </li>
+          <li>
+            <strong>Explainable AI:</strong> The application incorporates
+            explainable AI techniques, providing users with a visual explanation
+            of the model’s decision-making process. This transparency helps
+            build trust in the AI’s predictions that could support clinicians in
+            their decision-making.
+          </li>
+        </ul>
+
+        <h2>The Technology Behind The Application</h2>
+        <p>
+          This application is powered by advanced machine learning technologies
+          and frameworks, aiming to provide high performance and accuracy:
+        </p>
+        <ul>
+          <li>
+            <strong>Important Frameworks and Libraries:</strong> The training of
+            the machine learning model for this project was conducted using the
+            PyTorch framework. To optimize the model, Optuna was used for
+            hyperparameter tuning, fine-tuning parameters such as learning rate
+            and weight decay during the training process. This optimization
+            aimed to achieve an optimal bias-variance tradeoff in the model.
+            Additionally, scikit-learn's StratifiedKFold method was used for
+            cross-validation, helping to mitigate overfitting while ensuring
+            that each fold maintained the same distribution of class labels,
+            thereby providing a balanced and thorough evaluation of the model's
+            performance.
+          </li>
+          <li>
+            <strong>Convolutional Neural Networks (CNNs):</strong> At the heart
+            of the application is a CNN, a type of deep-learning model
+            specifically designed for image processing. CNNs excel at
+            recognizing patterns in visual data, making them ideal for analyzing
+            chest X-rays.
+          </li>
+          <li>
+            <strong>Transfer Learning:</strong> Transfer learning techniques
+            were employed to enhance the model’s performance. By leveraging
+            pre-trained models and customizing the final layer of DenseNet-121,
+            the model was able to achieve high accuracy even with a relatively
+            small dataset.
+          </li>
+          <li>
+            <strong>Data Augmentation:</strong> To improve the robustness of the
+            model, data augmentation techniques were used during training. This
+            involved creating variations of the training images (e.g.,
+            rotations, flips) to expose the model to a wider range of scenarios.
+          </li>
+          <li>
+            <strong>Guided Backpropagation:</strong> To provide visual
+            explanations for the model’s predictions, Guided Backpropagation, a
+            technique that finds the regions of the X-ray that were most
+            influential in the decision-making process, was used.
+          </li>
+        </ul>
+
+        <h2>Application Architecture</h2>
+        <img src="/static/CXRML_app_arch.png" class="responsive-image" />
+        <p>
+          If you want to read more about this application's architecture, refer
+          to the architecture overview here:
+          <a href="[Application_architecture_link]"
+            >Application_architecture_link</a
+          >
+        </p>
+
+        <h2>Contact Me</h2>
+        <p>
+          Any inquiries and feedback from the medical community, researchers,
+          and potential collaborators are welcome. If you have any questions,
+          suggestions, or would like to learn more about this application,
+          please contact me at justin.sy.huang@gmail.com.
+        </p>
+        <p>
+          To view the complete code for this project, refer to:
+          <a href="[GitHub_project_link]">GitHub_project_link</a>
+        </p>
+        <p>
+          My LinkedIn:
+          <a href="https://www.linkedin.com/in/justinhuang05"
+            >linkedin.com/in/JustinHuang05</a
+          >
+        </p>
+        <div style="height: 50px"></div>
+      </div>
+    </div>
+  </body>
+</html>

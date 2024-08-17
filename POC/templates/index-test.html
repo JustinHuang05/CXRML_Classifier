@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Layered Rendering</title>
+    <style>
+      #container {
+        position: relative;
+        width: 224px;
+        height: 224px;
+      }
+      #backgroundImage {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 224px;
+        height: 224px;
+        object-fit: cover;
+      }
+      #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 224px;
+        height: 224px;
+      }
+      #sliderContainer {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <img id="backgroundImage" src="" alt="First layer" />
+      <canvas id="overlay" width="224" height="224"></canvas>
+    </div>
+    <div id="sliderContainer">
+      <input type="range" id="mySlider" min="0" max="100" value="0" />
+      <span id="sliderValue">10%</span>
+    </div>
+    <div id="uploadContainer">
+      <input type="file" id="imageUpload" accept="image/*" />
+      <button id="uploadButton">Upload</button>
+    </div>
+    <div id="classificationResult">
+      <p id="classificationText"></p>
+    </div>
+
+    <script>
+      const slider = document.getElementById("mySlider");
+      const sliderValue = document.getElementById("sliderValue");
+      const overlayCanvas = document.getElementById("overlay");
+      const overlayCtx = overlayCanvas.getContext("2d");
+      const imageUpload = document.getElementById("imageUpload");
+      const uploadButton = document.getElementById("uploadButton");
+      const backgroundImage = document.getElementById("backgroundImage");
+      const classificationText = document.getElementById("classificationText");
+      let gradientData = [];
+
+      function mapSliderValue(value) {
+        return 0.05 + value * 0.0095; // Maps 0-100 to 5%-100%
+      }
+
+      function drawOverlay(threshold) {
+        console.log("drawOverlay called with threshold:", threshold);
+        console.log("Gradient data in drawOverlay:", gradientData);
+
+        if (!gradientData || gradientData.length === 0) {
+          console.error("Gradient data is empty or undefined.");
+          return;
+        }
+
+        overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+        const maxGradient = Math.max(...gradientData);
+        console.log("maxGradient:", maxGradient);
+
+        if (isNaN(maxGradient)) {
+          console.error("maxGradient is NaN, indicating invalid gradientData.");
+          return;
+        }
+
+        const thresholdValue = maxGradient * threshold;
+        console.log("thresholdValue:", thresholdValue);
+
+        const imageData = overlayCtx.createImageData(
+          overlayCanvas.width,
+          overlayCanvas.height
+        );
+
+        const width = overlayCanvas.width;
+        const height = overlayCanvas.height;
+
+        const leftLimit = Math.floor(width * 0.15);
+        const rightLimit = Math.floor(width * 0.85);
+        const topLimit = Math.floor(height * 0.15);
+        const bottomLimit = Math.floor(height * 0.85);
+
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const index = (y * width + x) * 4;
+
+            // Exclude the rest of the specified square region
+            if (
+              x < leftLimit ||
+              x > rightLimit ||
+              y < topLimit ||
+              y > bottomLimit
+            ) {
+              continue;
+            }
+
+            const gradientValue = gradientData[y * width + x];
+            if (gradientValue > thresholdValue) {
+              imageData.data[index] = 255; // Red
+              imageData.data[index + 1] = 255; // Green
+              imageData.data[index + 2] = 0; // Blue
+              imageData.data[index + 3] = 128; // Alpha
+            }
+          }
+        }
+
+        overlayCtx.putImageData(imageData, 0, 0);
+        console.log("Overlay updated");
+      }
+
+      slider.addEventListener("input", (event) => {
+        const value = event.target.value;
+        const threshold = mapSliderValue(value);
+        const displayValue = 100 - value; // Inverse the value for display
+        sliderValue.textContent = `${displayValue}%`; // Display the inverted slider value
+        console.log("Slider input event, value:", threshold);
+        drawOverlay(threshold);
+      });
+
+      uploadButton.addEventListener("click", () => {
+        const file = imageUpload.files[0];
+        if (file) {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          fetch("/upload", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                console.error(data.error);
+              } else {
+                console.log("Raw data received from server:", data); // Log raw data
+                console.log("File uploaded successfully:", data.filename);
+                const newImageUrl = `/uploads/${
+                  data.filename
+                }?${new Date().getTime()}`;
+                console.log("New image URL:", newImageUrl); // Log the new image URL
+                backgroundImage.src = newImageUrl; // Prevent caching
+
+                backgroundImage.onload = function () {
+                  console.log("Image loaded: " + newImageUrl);
+                };
+                backgroundImage.onerror = function () {
+                  console.error("Failed to load image.");
+                };
+
+                // Fully flatten the nested array
+                gradientData = data.gradient_data.flat(Infinity);
+
+                console.log("Flattened Gradient data received:", gradientData);
+                drawOverlay(0.05); // Default threshold value (5%)
+                slider.value = 0; // Reset slider to default value
+                sliderValue.textContent = "100%"; // Update slider label to default value
+
+                classificationText.textContent = `Predicted Label: ${data.predicted_label}`;
+                classificationText.style.color = "black";
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        } else {
+          alert("Please select an image file to upload.");
+        }
+      });
+    </script>
+  </body>
+</html>

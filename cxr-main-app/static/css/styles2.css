@@ -1,0 +1,104 @@
+body {
+  font-family: "Roboto", "sans-serif";
+  margin: 0;
+  display: grid;
+  grid-template-rows: 80px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.titlebar {
+  grid-column: 1 / -1;
+  background-color: #282828;
+  text-align: left;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5); /* Adding a drop shadow */
+  color: white;
+}
+
+.links a {
+  margin-left: 20px;
+  color: white;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.scroll-wrapper {
+  overflow-y: auto; /* Enable vertical scrolling on the wrapper */
+  flex-grow: 1;
+  padding-right: 20px; /* Add space to the right for the scrollbar */
+}
+
+.about-container {
+  width: 850px; /* Set the container to take up a fixed width */
+  margin: 20px auto; /* Center the container horizontally with some top margin */
+  padding: 20px; /* Add padding inside the container for spacing */
+  box-sizing: border-box; /* Ensure padding is included in the width and height */
+  height: 100%;
+}
+
+.about-container h1,
+.about-container h2,
+.about-container h3 {
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.about-container p,
+.about-container ul {
+  line-height: 1.6; /* Improve readability */
+}
+
+.about-container ul {
+  padding-left: 20px; /* Indent for list items */
+}
+
+.about-container a {
+  color: #1a0dab; /* Link color */
+  text-decoration: none;
+}
+
+.about-container a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Media query for screens narrower than 1020px */
+@media (max-width: 950px) {
+  .about-container {
+    width: 90%; /* Set the container to take up the full width of the viewport */
+    padding: 10px; /* Reduce padding for smaller screens */
+  }
+
+  .scroll-wrapper {
+    padding-right: 10px; /* Adjust padding for the scrollbar */
+  }
+
+  .about-container h1,
+  .about-container h2,
+  .about-container h3 {
+    margin-top: 10px;
+  }
+
+  .about-container p,
+  .about-container ul {
+    line-height: 1.4; /* Adjust line height for better readability */
+  }
+
+  .about-container ul {
+    padding-left: 15px; /* Adjust indentation for list items */
+  }
+}
+
+.responsive-image {
+  max-width: 100%; /* Image width will not exceed its container's width */
+  height: auto; /* Height adjusts automatically to maintain aspect ratio */
+  display: block; /* Removes the default inline element behavior of images */
+  margin: 0 auto; /* Centers the image horizontally */
+}
