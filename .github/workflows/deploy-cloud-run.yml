@@ -28,7 +28,8 @@ jobs:
 
       - name: Authenticate Docker with GCP
         run: |
-          gcloud auth configure-docker
+          echo "Authenticating Docker CLI with Google Artifact Registry..."
+          gcloud auth configure-docker gcr.io --quiet
 
       - name: Build and Push Docker Image
         run: |
