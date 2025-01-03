@@ -1,0 +1,50 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Parse GCP Config
+        id: parse-config
+        run: |
+          CONFIG=$(cat ML-WS/gcp_config.json)
+          echo "PROJECT_ID=$(echo $CONFIG | jq -r .project_id)" >> $GITHUB_ENV
+          echo "REGION=$(echo $CONFIG | jq -r .region)" >> $GITHUB_ENV
+
+      - name: Setup GCloud CLI
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Authenticate Docker with GCP
+        run: |
+          gcloud auth configure-docker
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t gcr.io/${{ env.PROJECT_ID }}/cxrml-service:latest ML-WS/
+          docker push gcr.io/${{ env.PROJECT_ID }}/cxrml-service:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy cxrml-service \
+            --image gcr.io/${{ env.PROJECT_ID }}/cxrml-service:latest \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated
+
+      - name: Output Cloud Run URL
+        id: cloud-run-url
+        run: |
+          URL=$(gcloud run services describe cxrml-service --platform managed --region ${{ env.REGION }} --format "value(status.url)")
+          echo "CLOUD_RUN_URL=$URL" >> $GITHUB_ENV

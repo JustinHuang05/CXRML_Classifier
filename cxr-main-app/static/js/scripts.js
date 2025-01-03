@@ -17,6 +17,20 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+// Function to update the classification text based on screen size
+function updateClassificationText(predictedLabel) {
+  const classificationText = document.querySelector('.prediction-text');
+
+  // Check if the screen width is less than 400px
+  if (window.matchMedia("(max-width: 400px)").matches) {
+    // For smaller screens, display a different text
+    classificationText.textContent = `${predictedLabel}`;
+  } else {
+    // For larger screens, display the normal text
+    classificationText.textContent = `Predicted: ${predictedLabel}`;
+  }
+}
+
 function toggleDropdown() {
   const dropdownOptions = document.getElementById('dropdownOptions');
   dropdownOptions.style.display = dropdownOptions.style.display === 'block' ? 'none' : 'block';
@@ -206,16 +220,16 @@ function handleFileSelect(fileInput) {
           console.log("Flattened Gradient data received:", gradientData);
           sliderValue.textContent = "30%"; // Update slider label to default value
 
-          classificationText.textContent = `Predicted: ${data.predicted_label}`;
+          updateClassificationText(data.predicted_label);
           if (data.predicted_label == 'Covid') {
-            additionalText.textContent = 'A chest X-ray indicative of COVID-19 often shows bilateral ground-glass opacities (GGOs), which are hazy, gray areas predominantly located in the peripheral and lower lung zones. These GGOs are typically accompanied by a lack of pleural effusion, which helps distinguish COVID-19 from other respiratory conditions. Additionally, COVID-19 pneumonia frequently presents with a diffuse, patchy distribution across both lungs, with the absence of significant consolidation in the early stages of the disease.';
+            additionalText.textContent = 'A chest X-ray indicative of COVID-19 often shows bilateral ground-glass opacities (GGOs), which are hazy, gray areas predominantly located in the peripheral and lower lung zones.';
             sliderContainer.style.display = "flex"; // Show slider container
           } else if (data.predicted_label == 'Normal') {
-            additionalText.textContent = 'A normal chest X-ray should show clear, well-defined lung fields without any areas of abnormal opacity or shadowing. The lungs should appear dark, indicating they are air-filled, with the bronchial tree and blood vessels faintly visible as fine, branching lines. The heart and diaphragm should have smooth, distinct borders, with the heart positioned centrally and the diaphragm appearing as a smooth, dome-shaped line at the base of the lungs. The bony structures, including the ribs, spine, and clavicles, should be visible without any fractures or deformities.';
+            additionalText.textContent = 'A normal chest X-ray should show clear, well-defined lung fields without any areas of abnormal opacity or shadowing. The lungs should appear dark, with the bronchial tree and blood vessels faintly visible.';
             gradientData = []; // Clear gradient data if the prediction is normal
             sliderContainer.style.display = "none"; // Hide slider container
           } else if (data.predicted_label == 'Pneumonia') {
-            additionalText.textContent = 'A chest X-ray indicative of pneumonia typically reveals areas of consolidation, where lung tissue is visibly dense and white due to fluid or pus accumulation. This consolidation often affects one or more specific lobes of the lung, and pleural effusion, where fluid builds up between the lungs and chest wall, is more commonly observed in pneumonia than in COVID-19. Lung scarring may also be evident in cases of severe or long-lasting pneumonia as a result of the healing process.';
+            additionalText.textContent = 'A chest X-ray indicative of pneumonia typically reveals areas of consolidation, where lung tissue is visibly dense and white due to fluid or pus accumulation.';
             sliderContainer.style.display = "flex"; // Show slider container
           }
         }
@@ -294,16 +308,16 @@ function selectTestImage(imageName, folderName) {
             console.log("Flattened Gradient data received:", gradientData);
             sliderValue.textContent = "30%"; // Update slider label to default value
 
-            classificationText.textContent = `Predicted: ${data.predicted_label}`;
+            updateClassificationText(data.predicted_label);
             if (data.predicted_label == 'Covid') {
-              additionalText.textContent = 'A chest X-ray indicative of COVID-19 often shows bilateral ground-glass opacities (GGOs), which are hazy, gray areas predominantly located in the peripheral and lower lung zones. These GGOs are typically accompanied by a lack of pleural effusion, which helps distinguish COVID-19 from other respiratory conditions. Additionally, COVID-19 pneumonia frequently presents with a diffuse, patchy distribution across both lungs, with the absence of significant consolidation in the early stages of the disease.';
+              additionalText.textContent = 'A chest X-ray indicative of COVID-19 often shows bilateral ground-glass opacities (GGOs), which are hazy, gray areas predominantly located in the peripheral and lower lung zones.';
               sliderContainer.style.display = "flex"; // Show slider container
             } else if (data.predicted_label == 'Normal') {
-              additionalText.textContent = 'A normal chest X-ray should show clear, well-defined lung fields without any areas of abnormal opacity or shadowing. The lungs should appear dark, indicating they are air-filled, with the bronchial tree and blood vessels faintly visible as fine, branching lines. The heart and diaphragm should have smooth, distinct borders, with the heart positioned centrally and the diaphragm appearing as a smooth, dome-shaped line at the base of the lungs. The bony structures, including the ribs, spine, and clavicles, should be visible without any fractures or deformities.';
+              additionalText.textContent = 'A normal chest X-ray should show clear, well-defined lung fields without any areas of abnormal opacity or shadowing. The lungs should appear dark, with the bronchial tree and blood vessels faintly visible.';
               gradientData = []; // Clear gradient data if the prediction is normal
               sliderContainer.style.display = "none"; // Hide slider container
             } else if (data.predicted_label == 'Pneumonia') {
-              additionalText.textContent = 'A chest X-ray indicative of pneumonia typically reveals areas of consolidation, where lung tissue is visibly dense and white due to fluid or pus accumulation. This consolidation often affects one or more specific lobes of the lung, and pleural effusion, where fluid builds up between the lungs and chest wall, is more commonly observed in pneumonia than in COVID-19. Lung scarring may also be evident in cases of severe or long-lasting pneumonia as a result of the healing process.';
+              additionalText.textContent = 'A chest X-ray indicative of pneumonia typically reveals areas of consolidation, where lung tissue is visibly dense and white due to fluid or pus accumulation.';
               sliderContainer.style.display = "flex"; // Show slider container
             }
           }
@@ -330,10 +344,35 @@ function handleDropdownOption2and3(folderName) {
       const fileDialog = document.getElementById('fileDialog');
       const fileListContainer = document.getElementById('fileListContainer');
       fileListContainer.innerHTML = ''; // Clear any existing content
-      if (images.length === 0) {
+
+      // Initialize arrays to hold the first 3 images for each category
+      let cImages = [];
+      let nImages = [];
+      let pImages = [];
+      let otherImages = [];
+
+      // Organize the images into respective categories
+      images.forEach(image => {
+        if (image.startsWith('C') && cImages.length < 3) {
+          cImages.push(image);
+        } else if (image.startsWith('N') && nImages.length < 3) {
+          nImages.push(image);
+        } else if (image.startsWith('P') && pImages.length < 3) {
+          pImages.push(image);
+        } else {
+          otherImages.push(image);
+        }
+      });
+
+      // Combine the filtered images with the remaining ones, excluding the 9 chosen first
+      const orderedImages = [...cImages, ...nImages, ...pImages, ...otherImages];
+
+      if (orderedImages.length === 0) {
         console.log('No images found.');
       }
-      images.forEach(image => {
+
+      // Add images to the list in the desired order
+      orderedImages.forEach(image => {
         console.log('Adding image to list:', image);
         const imageItem = document.createElement('div');
         imageItem.textContent = image;
@@ -351,11 +390,13 @@ function handleDropdownOption2and3(folderName) {
         });
         fileListContainer.appendChild(imageItem);
       });
+
       console.log('Displaying file dialog');
       fileDialog.showModal();
     })
     .catch(error => console.error('Error fetching image list:', error));
 }
+
 
 function closeDialog() {
   console.log('Closing dialog');

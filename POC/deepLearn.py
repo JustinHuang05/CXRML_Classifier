@@ -191,7 +191,8 @@ if __name__ == "__main__":
     base_dir = Path(dataPath)
     train_dir = base_dir / 'train'
     valid_dir = base_dir / 'valid'
-
+    valid_dir = base_dir / 'test'
+    
     # Load datasets
     train_dataset = ImageFolder(root=train_dir, transform=train_transform)
     val_dataset = ImageFolder(root=valid_dir, transform=val_transform)
