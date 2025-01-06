@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code from the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Step 2: Parse GCP Config
       - name: Parse GCP Config
         id: parse-config
         run: |
@@ -20,32 +22,51 @@ jobs:
           echo "PROJECT_ID=$(echo $CONFIG | jq -r .project_id)" >> $GITHUB_ENV
           echo "REGION=$(echo $CONFIG | jq -r .region)" >> $GITHUB_ENV
 
+      # Step 3: Setup GCloud CLI
       - name: Setup GCloud CLI
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ env.PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
+      # Step 4: Authenticate Docker with Google Artifact Registry
       - name: Authenticate Docker with GCP
         run: |
           echo "Authenticating Docker CLI with Google Artifact Registry..."
           gcloud auth configure-docker gcr.io --quiet
 
+      # Step 5: Enable Artifact Registry API (if not already enabled)
+      - name: Enable Artifact Registry API
+        run: |
+          gcloud services enable artifactregistry.googleapis.com
+
+      # Step 6: Build and Push Docker Image
       - name: Build and Push Docker Image
         run: |
-          docker build -t gcr.io/${{ env.PROJECT_ID }}/cxrml-service:latest ML-WS/
+          echo "Building and pushing Docker image to Google Artifact Registry..."
+          docker buildx build --platform linux/amd64 -t gcr.io/${{ env.PROJECT_ID }}/cxrml-service:latest ML-WS/
           docker push gcr.io/${{ env.PROJECT_ID }}/cxrml-service:latest
 
+      # Step 7: Deploy to Cloud Run
       - name: Deploy to Cloud Run
         run: |
+          echo "Deploying service to Cloud Run..."
           gcloud run deploy cxrml-service \
             --image gcr.io/${{ env.PROJECT_ID }}/cxrml-service:latest \
             --region ${{ env.REGION }} \
             --platform managed \
             --allow-unauthenticated
 
+      # Step 8: Output Cloud Run Service URL
       - name: Output Cloud Run URL
         id: cloud-run-url
         run: |
           URL=$(gcloud run services describe cxrml-service --platform managed --region ${{ env.REGION }} --format "value(status.url)")
           echo "CLOUD_RUN_URL=$URL" >> $GITHUB_ENV
+        env:
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+          REGION: ${{ env.REGION }}
+
+      # # Step 9: Print the Cloud Run URL to the console
+      # - name: Display Cloud Run URL
+      #   run: echo "Your service is live at: ${{ env.CLOUD_RUN_URL }}"

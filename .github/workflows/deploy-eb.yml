@@ -14,19 +14,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set Up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+      # - name: Set Up AWS CLI
+      #   uses: aws-actions/configure-aws-credentials@v3
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
 
-      - name: Update ENDPOINT_URL in app.py
-        run: |
-          sed -i "s|ENDPOINT_URL = '.*'|ENDPOINT_URL = '${{ env.CLOUD_RUN_URL }}'|" cxr-main-app/app.py
+      # - name: Update ENDPOINT_URL in app.py
+      #   run: |
+      #     sed -i "s|ENDPOINT_URL = '.*'|ENDPOINT_URL = '${{ env.CLOUD_RUN_URL }}'|" cxr-main-app/app.py
 
-      - name: Deploy to Elastic Beanstalk
-        run: |
-          cd cxr-main-app
-          eb init -p python-3.8 YOUR_APPLICATION_NAME --region us-east-1
-          eb deploy
+      # - name: Deploy to Elastic Beanstalk
+      #   run: |
+      #     cd cxr-main-app
+      #     eb init -p python-3.8 YOUR_APPLICATION_NAME --region us-east-1
+      #     eb deploy
