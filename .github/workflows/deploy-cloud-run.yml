@@ -35,11 +35,6 @@ jobs:
           echo "Authenticating Docker CLI with Google Artifact Registry..."
           gcloud auth configure-docker gcr.io --quiet
 
-      # Step 5: Enable Artifact Registry API (if not already enabled)
-      - name: Enable Artifact Registry API
-        run: |
-          gcloud services enable artifactregistry.googleapis.com
-
       # Step 6: Build and Push Docker Image
       - name: Build and Push Docker Image
         run: |
@@ -67,6 +62,7 @@ jobs:
           PROJECT_ID: ${{ env.PROJECT_ID }}
           REGION: ${{ env.REGION }}
 
-      # # Step 9: Print the Cloud Run URL to the console
-      # - name: Display Cloud Run URL
-      #   run: echo "Your service is live at: ${{ env.CLOUD_RUN_URL }}"
+      # Step 9: Print the Cloud Run URL to the console
+      - name: Display Cloud Run URL
+        run: |
+          echo "Your service is live at: ${{ env.CLOUD_RUN_URL }}"
