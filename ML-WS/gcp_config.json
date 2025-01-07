@@ -1,4 +1,9 @@
 { 
     "project_id": "cxrml-ws-2",
-    "region": "us-central1"
+    "region": "us-central1",
+    "service_name": "cxrml-service",
+    "memory": "4Gi",
+    "cpu": "8",
+    "min_instances": "1",
+    "max_instances": "12"
 } 
