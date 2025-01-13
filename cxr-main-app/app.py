@@ -12,7 +12,7 @@ UPLOAD_FOLDER = 'uploads'
 TEST_DATA_FOLDER = 'cxr_test_data'
 EXTERNAL_TEST_DATA_FOLDER = 'external_test_data'
 
-ENDPOINT_URL = 'https://cxrml-service-277681696511.us-central1.run.app/predict' 
+ENDPOINT_URL = os.getenv('ENDPOINT_URL', '')  # Replace default-url.com with a placeholder or leave blank.
 
 @app.route('/')
 def home_page():

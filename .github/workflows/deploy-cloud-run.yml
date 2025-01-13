@@ -26,6 +26,7 @@ jobs:
           echo "CPU=$(echo $CONFIG | jq -r .cpu)" >> $GITHUB_ENV
           echo "MIN_INSTANCES=$(echo $CONFIG | jq -r .min_instances)" >> $GITHUB_ENV
           echo "MAX_INSTANCES=$(echo $CONFIG | jq -r .max_instances)" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_EMAIL=$(echo $CONFIG | jq -r .service_account_email)" >> $GITHUB_ENV
 
       # Step 3: Setup GCloud CLI (service_account_key errors, but it still seems to work)
       - name: Setup GCloud CLI
@@ -34,14 +35,14 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
-      # Step 3.1: Authenticate GCloud
+      # Step 4: Authenticate GCloud
       - name: Google Cloud Auth
         uses: "google-github-actions/auth@v2"
         with:
           credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
           project_id: ${{ env.PROJECT_ID }}
 
-      # Step 4: Authenticate Docker with Google Container Registry
+      # Step 5: Authenticate Docker with Google Container Registry
       - name: "Login to GCR"
         uses: "docker/login-action@v3"
         with:
