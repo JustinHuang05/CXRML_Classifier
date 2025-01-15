@@ -11,9 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Step 2: Set Up AWS CLI
       - name: Set Up AWS CLI
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -21,13 +23,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      # Step 3: Update `app.py` with the Cloud Run URL
       - name: Update ENDPOINT_URL in app.py
+        env:
+          CLOUD_RUN_URL: ${{ github.event.workflow_run.outputs.CLOUD_RUN_URL }}
         run: |
-          echo why_is_this_empty
-          echo ${{ env.CLOUD_RUN_URL }}
-          echo see_look_it_empty
-          sed -i "s|ENDPOINT_URL = '.*'|ENDPOINT_URL = '${{ env.CLOUD_RUN_URL }}/predict'|" cxr-main-app/app.py
+          echo "Using Cloud Run URL: $CLOUD_RUN_URL"
+          sed -i "s|ENDPOINT_URL = '.*'|ENDPOINT_URL = '${CLOUD_RUN_URL}/predict'|" cxr-main-app/app.py
 
+          # Debug: Print the updated `app.py` contents to verify
+          echo "Debug: Verifying updated app.py"
+          cat cxr-main-app/app.py | grep "ENDPOINT_URL"
+
+      - name: Validate CLOUD_RUN_URL
+        run: |
+          if [ -z "$CLOUD_RUN_URL" ]; then
+            echo "CLOUD_RUN_URL is not set! Exiting."
+            exit 1
+          fi
+
+      # Step 4: Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         run: |
           cd cxr-main-app

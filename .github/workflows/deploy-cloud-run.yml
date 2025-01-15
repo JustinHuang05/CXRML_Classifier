@@ -82,6 +82,7 @@ jobs:
         run: |
           URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} --platform managed --region ${{ env.REGION }} --format "value(status.url)")
           echo "CLOUD_RUN_URL=$URL" >> $GITHUB_ENV
+          echo "::set-output name=CLOUD_RUN_URL::$URL"
         env:
           PROJECT_ID: ${{ env.PROJECT_ID }}
           REGION: ${{ env.REGION }}
