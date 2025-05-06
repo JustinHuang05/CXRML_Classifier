@@ -29,6 +29,7 @@ This directory contains Terraform configurations to deploy the ML-WS service to 
      - Cloud Run API (Cloud Run Admin API) (`run.googleapis.com`)
      - Cloud Build API (`cloudbuild.googleapis.com`)
      - Artifact Registry API (`artifactregistry.googleapis.com`)
+     - Cloud Resource Manager API
 
 3. **Create a Service Account**:
 
