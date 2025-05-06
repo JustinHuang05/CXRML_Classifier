@@ -44,6 +44,7 @@ resource "google_cloudbuild_trigger" "build_trigger" {
     push {
       branch = "^main$"
     }
+    connection = "projects/${var.gcp_project_id}/locations/global/connections/github-connection"
   }
 }
 
