@@ -36,7 +36,7 @@ resource "google_project_service" "registry" {
 resource "google_cloudbuild_trigger" "build_trigger" {
   name        = "ml-ws-build"
   description = "Build ML-WS Docker image"
-  filename    = "ML-WS/infra/cloudbuild.yaml"
+  filename    = "cloudbuild.yaml"
   included_files = ["ML-WS/**"]
   github {
     owner = "JustinHuang05"
