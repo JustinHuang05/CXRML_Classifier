@@ -100,3 +100,9 @@ To switch GCP accounts:
 - Verify the GCP APIs are enabled in your project.
 - Make sure the GitHub connection is properly set up in Cloud Build.
 - If you get a "Request contains an invalid argument" error, check that the GitHub connection name in `main.tf` matches the one in Cloud Build.
+
+TIMEBOX:
+1. the cloud run is deploying on commit
+2. have no idea where the endpoint url is stored.
+3. should sign into personal aws and try to redeploy EB but using the new web service
+4. main issue is that it needs access to actually hitting the endpoint
