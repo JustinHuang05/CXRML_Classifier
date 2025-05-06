@@ -7,9 +7,11 @@ This directory contains Terraform configurations to deploy the ML-WS service to 
 - A Google Cloud Platform (GCP) account.
 - A GCP project with billing enabled.
 - A service account with the following roles:
-  - `roles/run.admin`
-  - `roles/cloudbuild.builds.builder`
-  - `roles/storage.admin`
+      Service Usage Admin
+      Cloud Build Service Account
+      Cloud Run Admin
+      Storage Admin
+      Service Account User
 - A service account key (JSON) for authentication.
 - A GitHub repository for your project.
 
