@@ -22,29 +22,9 @@ resource "google_project_service" "run" {
   disable_on_destroy = false
 }
 
-resource "google_project_service" "build" {
-  service = "cloudbuild.googleapis.com"
-  disable_on_destroy = false
-}
-
 resource "google_project_service" "registry" {
   service = "artifactregistry.googleapis.com"
   disable_on_destroy = false
-}
-
-# Build and push Docker image using Cloud Build
-resource "google_cloudbuild_trigger" "build_trigger" {
-  name        = "ml-ws-build"
-  description = "Build ML-WS Docker image"
-  filename    = "cloudbuild.yaml"
-  included_files = ["ML-WS/**"]
-  github {
-    owner = "JustinHuang05"
-    name  = "CXRML_Classifier"
-    push {
-      branch = "^main$"
-    }
-  }
 }
 
 # Deploy to Cloud Run
@@ -65,7 +45,6 @@ resource "google_cloud_run_service" "ml_ws" {
     percent         = 100
     latest_revision = true
   }
-  depends_on = [google_cloudbuild_trigger.build_trigger]
 }
 
 # Output the Cloud Run service URL
