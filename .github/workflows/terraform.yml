@@ -1,0 +1,39 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ML-WS/infra/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Terraform Init
+        run: |
+          cd ML-WS/infra
+          terraform init
+
+      - name: Terraform Apply
+        run: |
+          cd ML-WS/infra
+          terraform apply -auto-approve
+
+      - name: Output Service URL
+        run: |
+          cd ML-WS/infra
+          echo "Service URL: $(terraform output -raw service_url)"
