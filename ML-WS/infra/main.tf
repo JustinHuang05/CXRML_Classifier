@@ -45,7 +45,6 @@ resource "google_cloudbuild_trigger" "build_trigger" {
       branch = "^main$"
     }
   }
-  github_connection = "projects/${var.gcp_project_id}/locations/global/connections/github-connection"
 }
 
 # Deploy to Cloud Run
