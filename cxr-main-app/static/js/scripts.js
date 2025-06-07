@@ -191,52 +191,85 @@ function handleFileSelect(fileInput) {
         method: "POST",
         body: formData,
       })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          console.error(data.error);
-        } else {
-          console.log("Raw data received from server:", data); // Log raw data
-          console.log("File uploaded successfully:", data.filename);
-          const newImageUrl = `/uploads/${data.filename}?${new Date().getTime()}`;
-          console.log("New image URL:", newImageUrl);
-
-          backgroundImage.src = newImageUrl;
-          backgroundImage.onload = function() {
-            console.log("Image loaded successfully.");
-            resizeCanvasToImage();
-            // The slider input event will handle the overlay drawing
-            slider.value = 30; // Reset slider to default value
-            slider.dispatchEvent(new Event('input')); // Trigger the input event
-          };
-          backgroundImage.onerror = function() {
-            console.error("Failed to load image.");
-          };
-
-          // Fully flatten the nested array
-          gradientData = data.predicted_label === 'Normal' ? [] : data.gradient_data.flat(Infinity);
-          predictedLabel = data.predicted_label; // Store the predicted label
-
-          console.log("Flattened Gradient data received:", gradientData);
-          sliderValue.textContent = "30%"; // Update slider label to default value
-
-          updateClassificationText(data.predicted_label);
-          if (data.predicted_label == 'Covid') {
-            additionalText.textContent = 'A chest X-ray indicative of COVID-19 often shows bilateral ground-glass opacities (GGOs), which are hazy, gray areas predominantly located in the peripheral and lower lung zones.';
-            sliderContainer.style.display = "flex"; // Show slider container
-          } else if (data.predicted_label == 'Normal') {
-            additionalText.textContent = 'A normal chest X-ray should show clear, well-defined lung fields without any areas of abnormal opacity or shadowing. The lungs should appear dark, with the bronchial tree and blood vessels faintly visible.';
-            gradientData = []; // Clear gradient data if the prediction is normal
-            sliderContainer.style.display = "none"; // Hide slider container
-          } else if (data.predicted_label == 'Pneumonia') {
-            additionalText.textContent = 'A chest X-ray indicative of pneumonia typically reveals areas of consolidation, where lung tissue is visibly dense and white due to fluid or pus accumulation.';
-            sliderContainer.style.display = "flex"; // Show slider container
+        .then((response) => {
+          // Check if the response is successful
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+          
+          // Check if the response is JSON
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Server returned non-JSON response");
+          }
+          
+          return response.json();
+        })
+        .then((data) => {
+          if (data.error) {
+            console.error("Server error:", data.error);
+            alert(`Error: ${data.error}`);
+          } else {
+            console.log("Raw data received from server:", data); // Log raw data
+            console.log("File uploaded successfully:", data.filename);
+            const newImageUrl = `/uploads/${data.filename}?${new Date().getTime()}`;
+            console.log("New image URL:", newImageUrl);
+
+            backgroundImage.src = newImageUrl;
+            backgroundImage.onload = function() {
+              console.log("Image loaded successfully.");
+              resizeCanvasToImage();
+              // The slider input event will handle the overlay drawing
+              slider.value = 30; // Reset slider to default value
+              slider.dispatchEvent(new Event('input')); // Trigger the input event
+            };
+            backgroundImage.onerror = function() {
+              console.error("Failed to load image.");
+            };
+
+            // Fully flatten the nested array
+            gradientData = data.predicted_label === 'Normal' ? [] : data.gradient_data.flat(Infinity);
+            predictedLabel = data.predicted_label; // Store the predicted label
+
+            console.log("Flattened Gradient data received:", gradientData);
+            sliderValue.textContent = "30%"; // Update slider label to default value
+
+            updateClassificationText(data.predicted_label);
+            if (data.predicted_label == 'Covid') {
+              additionalText.textContent = 'A chest X-ray indicative of COVID-19 often shows bilateral ground-glass opacities (GGOs), which are hazy, gray areas predominantly located in the peripheral and lower lung zones.';
+              sliderContainer.style.display = "flex"; // Show slider container
+            } else if (data.predicted_label == 'Normal') {
+              additionalText.textContent = 'A normal chest X-ray should show clear, well-defined lung fields without any areas of abnormal opacity or shadowing. The lungs should appear dark, with the bronchial tree and blood vessels faintly visible.';
+              gradientData = []; // Clear gradient data if the prediction is normal
+              sliderContainer.style.display = "none"; // Hide slider container
+            } else if (data.predicted_label == 'Pneumonia') {
+              additionalText.textContent = 'A chest X-ray indicative of pneumonia typically reveals areas of consolidation, where lung tissue is visibly dense and white due to fluid or pus accumulation.';
+              sliderContainer.style.display = "flex"; // Show slider container
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          
+          // Reset UI state
+          backgroundImage.src = '';
+          const classificationText = document.querySelector('.prediction-text');
+          const additionalText = document.querySelector('.additional-text');
+          const sliderContainer = document.getElementById("sliderContainer");
+          
+          classificationText.textContent = 'Error';
+          additionalText.textContent = 'Failed to process image. Please try again.';
+          sliderContainer.style.display = "none";
+          
+          // Show user-friendly error message
+          if (error.message.includes('HTTP error! status: 500')) {
+            alert('Server error occurred. The external ML service may be unavailable. Please try again later.');
+          } else if (error.message.includes('non-JSON response')) {
+            alert('Server returned an unexpected response. Please try again.');
+          } else {
+            alert(`Upload failed: ${error.message}`);
+          }
+        });
     };
 
     backgroundImage.onerror = function() {
@@ -280,10 +313,24 @@ function selectTestImage(imageName, folderName) {
         method: "POST",
         body: formData,
       })
-        .then((response) => response.json())
+        .then((response) => {
+          // Check if the response is successful
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          // Check if the response is JSON
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Server returned non-JSON response");
+          }
+          
+          return response.json();
+        })
         .then((data) => {
           if (data.error) {
-            console.error(data.error);
+            console.error("Server error:", data.error);
+            alert(`Error: ${data.error}`);
           } else {
             console.log("Raw data received from server:", data);
             console.log("File uploaded successfully:", data.filename);
@@ -324,6 +371,25 @@ function selectTestImage(imageName, folderName) {
         })
         .catch((error) => {
           console.error("Error:", error);
+          
+          // Reset UI state
+          backgroundImage.src = '';
+          const classificationText = document.querySelector('.prediction-text');
+          const additionalText = document.querySelector('.additional-text');
+          const sliderContainer = document.getElementById("sliderContainer");
+          
+          classificationText.textContent = 'Error';
+          additionalText.textContent = 'Failed to process image. Please try again.';
+          sliderContainer.style.display = "none";
+          
+          // Show user-friendly error message
+          if (error.message.includes('HTTP error! status: 500')) {
+            alert('Server error occurred. The external ML service may be unavailable. Please try again later.');
+          } else if (error.message.includes('non-JSON response')) {
+            alert('Server returned an unexpected response. Please try again.');
+          } else {
+            alert(`Upload failed: ${error.message}`);
+          }
         });
     })
     .catch(error => console.error('Error fetching image:', error));

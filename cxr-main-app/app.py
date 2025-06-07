@@ -46,8 +46,39 @@ def upload_file():
             image_bytes = image_file.read()
             image_base64 = base64.b64encode(image_bytes).decode('utf-8')
 
-        response = requests.post(ENDPOINT_URL, json={'image_bytes': image_base64})
-        result = response.json()
+        # Check if ENDPOINT_URL is configured
+        if not ENDPOINT_URL:
+            app.logger.error("ENDPOINT_URL environment variable is not set")
+            return jsonify({'error': 'External service not configured. Please contact administrator.'})
+
+        try:
+            response = requests.post(ENDPOINT_URL, json={'image_bytes': image_base64}, timeout=30)
+        except requests.exceptions.Timeout:
+            app.logger.error("Request to external API timed out")
+            return jsonify({'error': 'External service timed out. Please try again later.'})
+        except requests.exceptions.ConnectionError:
+            app.logger.error("Failed to connect to external API")
+            return jsonify({'error': 'Cannot connect to external service. Please try again later.'})
+        except requests.exceptions.RequestException as e:
+            app.logger.error(f"Request to external API failed: {str(e)}")
+            return jsonify({'error': 'External service request failed. Please try again later.'})
+        
+        # Check if the response is successful and contains JSON
+        if response.status_code != 200:
+            app.logger.error(f"External API returned status code {response.status_code}: {response.text}")
+            return jsonify({'error': f'External service unavailable (HTTP {response.status_code}). Please try again later.'})
+        
+        try:
+            result = response.json()
+        except requests.exceptions.JSONDecodeError:
+            app.logger.error(f"External API returned non-JSON response: {response.text}")
+            return jsonify({'error': 'External service returned invalid response. Please try again later.'})
+        
+        # Validate that the expected fields are present in the response
+        if 'gradient_data' not in result or 'prediction' not in result:
+            app.logger.error(f"External API returned incomplete response: {result}")
+            return jsonify({'error': 'External service returned incomplete data. Please try again later.'})
+            
         gradient_data = np.array(result['gradient_data'])
 
         return jsonify({'filename': filename, 'gradient_data': gradient_data.tolist(), 'predicted_label': result['prediction']})
